@@ -14,7 +14,7 @@ router.get("/", verifyToken, (req, res) => {
         const usersList = stmt.all(currentUserId);
 
         return res.render("client/index", {
-            title: "SandBox Chat Workspace",
+            title: "Sandbox Chat",
             user: req.user,
             usersList: usersList
         });
