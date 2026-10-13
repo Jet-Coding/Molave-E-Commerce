@@ -1,0 +1,32 @@
+    <header class="top-nav">
+        <div class="nav-left">
+            <div class="logo">
+                <img src="/images/Logo.svg" alt="logo" />
+            </div>
+            <div class="nav-search">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        </div>
+
+        <nav class="nav-center">
+            <a href="#" class="nav-tab"><i class="fa-solid fa-house"></i></a>
+            <a href="#" class="nav-tab active"><i class="fa-solid fa-tv"></i></a>
+            <a href="#" class="nav-tab"><i class="fa-solid fa-store"></i></a>
+            <a href="#" class="nav-tab"><i class="fa-solid fa-users"></i></a>
+            <a href="#" class="nav-tab"><i class="fa-solid fa-gamepad"></i></a>
+        </nav>
+
+        <div class="nav-right">
+            <button class="nav-btn"><i class="fa-solid fa-grid"></i></button>
+            <button class="nav-btn badge-btn" data-badge="1"><i class="fa-solid fa-bell"></i></button>
+            <div class="user-avatar-mini">
+                <img src="https://i.pravatar.cc/150?img=11" alt="Profile">
+                <!-- Logout Form -->
+                <form action="/auth/logout" method="POST" style="display: inline">
+                    <button type="submit" class="btn-icons" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </form>
+            </div>
+        </div> 
+    </header>

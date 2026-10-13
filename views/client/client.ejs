@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <div class="main-container">
+			<!-- Left Navigation / Conversation & Discovery Sidebar -->
+			<aside class="sidebar-chats">
+				<div class="chats-header">
+					<h2>Chats</h2>
+					<div class="user-profile">
+						<img
+							src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop"
+							alt="Avatar"
+							class="avatar" />
+						<div class="user-details">
+							<h3><%= (typeof user !== 'undefined' && user) ? (user.username || user.email) : 'Guest' %></h3>
+							<span class="status-indicator online">Online</span>
+						</div>
+					</div>
+
+					<!-- Logout Form -->
+					<form action="/auth/logout" method="POST" style="display: inline">
+						<button type="submit" class="btn-icons" title="Logout">
+							<i class="fa-solid fa-right-from-bracket"></i>
+						</button>
+					</form>
+				</div>
+
+				<div class="left-search-bar">
+					<i class="fa-solid fa-magnifying-glass"></i>
+					<input type="text" id="user-search-input" placeholder="Search accounts..." />
+				</div>
+
+				<!-- Section 1: Followed Contacts (My Chat List) -->
+				<div class="sidebar-section-title" style="padding: 10px 15px; font-weight: bold; color: #888; font-size: 0.85rem;">
+					MY CONTACTS
+				</div>
+				<nav class="chat-list" id="followed-contacts-list">
+					<% if (typeof contacts !== 'undefined' && contacts.length > 0) { %>
+						<% contacts.forEach((contact, index) => { %>
+							<div class="chat-item <%= index === 0 ? 'active' : '' %>" data-user-id="<%= contact.id %>" data-username="<%= contact.username %>">
+								<img
+									src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+									alt="<%= contact.username %>'s Avatar"
+									class="avatar" />
+								<div class="chat-info">
+									<div class="chat-top">
+										<span class="name"><%= contact.username %></span>
+										<span class="time">Active</span>
+									</div>
+									<p class="preview"><%= contact.email %></p>
+								</div>
+							</div>
+						<% }); %>
+					<% } else { %>
+						<div class="chat-item-empty" style="padding: 12px 15px; text-align: center; color: #888; font-size: 0.9rem;">
+							<p>No contacts yet. Follow users below to add them!</p>
+						</div>
+					<% } %>
+				</nav>
+
+				<!-- Section 2: Discover & Follow Accounts -->
+				<div class="sidebar-section-title" style="padding: 10px 15px; font-weight: bold; color: #888; font-size: 0.85rem; border-top: 1px solid #eee; margin-top: 10px;">
+					DISCOVER USERS
+				</div>
+				<div class="discover-list" id="discover-users-list" style="max-height: 200px; overflow-y: auto;">
+					<% if (typeof discoverUsers !== 'undefined' && discoverUsers.length > 0) { %>
+						<% discoverUsers.forEach((discUser) => { %>
+							<div class="discover-item" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 15px;" data-user-id="<%= discUser.id %>">
+								<div style="display: flex; align-items: center; gap: 10px;">
+									<img
+										src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+										alt="<%= discUser.username %>'s Avatar"
+										class="avatar" style="width: 32px; height: 32px; border-radius: 50%;" />
+									<div>
+										<span style="font-weight: 600; font-size: 0.9rem; display: block;"><%= discUser.username %></span>
+									</div>
+								</div>
+								<button class="btn-follow" data-user-id="<%= discUser.id %>" onclick="followUser('<%= discUser.id %>')" style="padding: 4px 12px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">
+									<i class="fa-solid fa-user-plus"></i> Follow
+								</button>
+							</div>
+						<% }); %>
+					<% } else { %>
+						<div style="padding: 10px 15px; text-align: center; color: #888; font-size: 0.85rem;">
+							<p>No new users to follow.</p>
+						</div>
+					<% } %>
+				</div>
+			</aside>
+
+			<!-- Center Active Chat Workspace -->
+			<main class="chat-main">
+				<% const activeUser = (typeof contacts !== 'undefined' && contacts.length > 0) ? contacts[0] : null; %>
+
+				<header class="chat-header">
+					<div class="active-user" id="active-user-header" data-user-id="<%= activeUser ? activeUser.id : '' %>">
+						<img
+							src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+							alt="Avatar"
+							class="avatar" />
+						<div>
+							<h3 class="name" id="active-username"><%= activeUser ? activeUser.username : 'Select a Contact' %></h3>
+							<span class="subtext"><%= activeUser ? 'Active now' : 'Active' %></span>
+						</div>
+					</div>
+					<div class="header-actions">
+						<button class="btn-icons" title="Start Call">
+							<i class="fa-solid fa-phone"></i>
+						</button>
+						<button class="btn-icons" title="Video Call">
+							<i class="fa-solid fa-video"></i>
+						</button>
+						<button class="btn-icons" id="toggle-info" title="Toggle Info">
+							<i class="fa-solid fa-circle-info"></i>
+						</button>
+					</div>
+				</header>
+
+				<section class="message-feed" id="message-feed">
+					<% if (activeUser) { %>
+						<div class="message-group incoming">
+							<img
+								src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+								alt="Avatar"
+								class="avatar-small" />
+							<div class="bubble-wrapper">
+								<div class="bubble">
+									Welcome! Start your conversation with <%= activeUser.username %>.
+								</div>
+								<span class="timestamp">Just now</span>
+							</div>
+						</div>
+					<% } else { %>
+						<div style="text-align: center; margin-top: 40px; color: #888;">
+							<i class="fa-solid fa-comments" style="font-size: 3rem; margin-bottom: 10px;"></i>
+							<p>Follow an account from the left sidebar to add them to your contacts and chat!</p>
+						</div>
+					<% } %>
+				</section>
+
+				<footer class="chat-composer">
+					<form id="chat-form">
+						<button type="button" class="btn-icons" title="Attach file">
+							<i class="fa-solid fa-paperclip"></i>
+						</button>
+						<input
+							type="text"
+							id="message-input"
+							placeholder="Type a message..."
+							autocomplete="off"
+							<%= !activeUser ? '' : '' %>
+							required />
+						<button type="button" class="btn-icons" title="Emoji">
+							<i class="fa-regular fa-face-smile"></i>
+						</button>
+						<button type="submit" class="btn-send" title="Send" <%= !activeUser ? '' : '' %>>
+							<i class="fa-solid fa-paper-plane"></i>
+						</button>
+					</form>
+				</footer>
+			</main>
+
+			<!-- Right Sidebar: Active Profile Info -->
+			<aside class="sidebar-right" id="sidebar-right">
+				<div class="info-profile" id="active-profile-card">
+					<img
+						src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=200&auto=format&fit=crop"
+						alt="Avatar"
+						class="avatar-large" />
+					<h3 class="name" id="profile-card-name"><%= activeUser ? activeUser.username : 'No Selection' %></h3>
+					<p id="profile-card-email"><%= activeUser ? activeUser.email : '' %></p>
+				</div>
+
+				<div class="shared-section">
+					<h4>Shared Files</h4>
+					<ul class="file-list">
+						<li>
+							<i class="fa-solid fa-file-pdf"></i>
+							<span>algebra_notes.pdf</span>
+						</li>
+						<li>
+							<i class="fa-solid fa-file-image"></i> <span>diagram_v1.png</span>
+						</li>
+					</ul>
+				</div>
+			</aside>
+		</div>
+</body>
+</html>
