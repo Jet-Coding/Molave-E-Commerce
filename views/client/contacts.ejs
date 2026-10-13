@@ -56,66 +56,27 @@
             <!-- Chat List -->
             <ul class="chat-list">
                 <!-- Unread Chat Item -->
-                <li class="chat-item unread">
-                    <div class="avatar-wrapper">
-                        <img src="https://i.pravatar.cc/150?img=12" alt="Alex Morgan" class="avatar">
-                        <span class="status-badge online"></span>
+                <% if (typeof contacts !== 'undefined' && contacts.length > 0) { %>
+                    <% contacts.forEach((contact) => { %>
+                        <a href="/?userId=<%= contact.id %>" class="chat-item" style="text-decoration: none; color: inherit; display: flex;">
+                            <div class="avatar-wrapper">
+                                <img src="https://i.pravatar.cc/150?img=32" alt="<%= contact.username %>" class="avatar">
+                                <span class="status-badge online"></span>
+                            </div>
+                            <div class="chat-info">
+                                <h3 class="chat-name"><%= contact.username %></h3>
+                                <p class="chat-snippet">
+                                    <span class="snippet-text">You're now connected. Say hello!</span>
+                                    <span class="chat-time">· Active</span>
+                                </p>
+                            </div>
+                        </a>
+                    <% }); %>
+                <% } else { %>
+                    <div style="padding: 15px; text-align: center; color: #888; font-size: 0.9rem;">
+                        <p>No contacts found. Follow users to start chatting!</p>
                     </div>
-                    <div class="chat-info">
-                        <h3 class="chat-name">Alex Morgan</h3>
-                        <p class="chat-snippet">
-                            <span class="snippet-text">Hey, are you free for a call?</span>
-                            <span class="chat-time">· 2m</span>
-                        </p>
-                    </div>
-                    <div class="unread-indicator"></div>
-                </li>
-
-                <!-- Read Chat Item with Sent Status -->
-                <li class="chat-item">
-                    <div class="avatar-wrapper">
-                        <img src="https://i.pravatar.cc/150?img=32" alt="Sophia Chen" class="avatar">
-                        <span class="status-badge offline"></span>
-                    </div>
-                    <div class="chat-info">
-                        <h3 class="chat-name">Sophia Chen</h3>
-                        <p class="chat-snippet">
-                            <span class="snippet-text">You: Sounds good, see you then!</span>
-                            <span class="chat-time">· 1h</span>
-                        </p>
-                    </div>
-                </li>
-
-                <!-- Unread Chat Item -->
-                <li class="chat-item unread">
-                    <div class="avatar-wrapper">
-                        <img src="https://i.pravatar.cc/150?img=68" alt="Marcus Vance" class="avatar">
-                        <span class="status-badge online"></span>
-                    </div>
-                    <div class="chat-info">
-                        <h3 class="chat-name">Marcus Vance</h3>
-                        <p class="chat-snippet">
-                            <span class="snippet-text">Sent a photo.</span>
-                            <span class="chat-time">· 3h</span>
-                        </p>
-                    </div>
-                    <div class="unread-indicator"></div>
-                </li>
-
-                <!-- Initials Avatar Chat Item -->
-                <li class="chat-item">
-                    <div class="avatar-wrapper">
-                        <div class="avatar initials">JL</div>
-                        <span class="status-badge offline"></span>
-                    </div>
-                    <div class="chat-info">
-                        <h3 class="chat-name">Jessica Lee</h3>
-                        <p class="chat-snippet">
-                            <span class="snippet-text">Thanks for the update!</span>
-                            <span class="chat-time">· Yesterday</span>
-                        </p>
-                    </div>
-                </li>
+                <% } %>
             </ul>
         </div>
 		<script>

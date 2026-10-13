@@ -177,25 +177,59 @@ body {
     color: var(--text-primary);
     width: 100%;
 }
+/* Filter Chips Container Styling */
 .filter-chips {
     display: flex;
     gap: 6px;
     margin: 8px 0;
+    padding: 2px 4px;
+    width: 100%;
+    overflow-x: auto;
+    white-space: nowrap;
+    scrollbar-width: thin; 
+    scrollbar-color: var(--bg-hover) transparent;
 }
-.chip {
-    background-color: transparent;
+/* Custom Webkit Scrollbar for Clean UI */
+.filter-chips::-webkit-scrollbar {
+    height: 4px;
+}
+.filter-chips::-webkit-scrollbar-track {
+    background: transparent;
+}
+.filter-chips::-webkit-scrollbar-thumb {
+    background-color: var(--bg-hover);
+    border-radius: 4px;
+}
+/* Individual Chip Sizing & Flex Constraints */
+.filter-chips .chip {
+    flex-shrink: 0;
+    background-color: var(--bg-input);
     border: none;
     color: var(--text-primary);
     padding: 6px 12px;
     border-radius: 18px;
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 600;
     cursor: pointer;
     position: relative;
+    transition: background-color 0.2s ease, color 0.2s ease;
 }
-.chip.active {
+.filter-chips .chip:hover {
+    background-color: var(--bg-hover);
+}
+.filter-chips .chip.active {
     background-color: rgba(0, 132, 255, 0.2);
     color: var(--accent-blue);
+}
+.badge-chip::after {
+    content: '';
+    position: absolute;
+    top: 6px;
+    right: 2px;
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-blue);
+    border-radius: 50%;
 }
 .badge-chip::after {
     content: '';
@@ -283,6 +317,51 @@ body {
     height: 12px;
     background-color: var(--accent-blue);
     border-radius: 50%;
+}
+/* Tab Pane Wrapper Container */
+.tab-pane {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    width: 100%;
+}
+/* Follow User List Item Adjustments */
+#tab-content-follow .chat-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 8px;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+#tab-content-follow .chat-item:hover {
+    background-color: var(--bg-hover);
+}
+/* Follow Button Style */
+.btn-follow {
+    background-color: var(--accent-blue);
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    flex-shrink: 0;
+}
+.btn-follow:hover {
+    background-color: #0069d9;
+}
+.btn-follow:active {
+    transform: scale(0.97);
+}
+/* Empty State / Notice Text */
+.tab-pane div[style*="text-align: center"] {
+    padding: 24px 12px;
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    text-align: center;
 }
 /* 3. Middle Chat Window */
 .chat-window {

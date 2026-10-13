@@ -20,33 +20,66 @@
 					<input type="text" placeholder="Search Messenger">
 				</div>
 
+				<!-- FILTER CHIPS -->
 				<div class="filter-chips">
-					<button class="chip active">All</button>
-					<button class="chip">Unread</button>
-					<button class="chip">Groups</button>
-					<button class="chip badge-chip">Communities</button>
+					<button class="chip active" onclick="switchTab('all')">All</button>
+					<button class="chip" onclick="switchTab('unread')">Unread</button>
+					<button class="chip" onclick="switchTab('follow')">Follow</button>
+					<button class="chip" onclick="switchTab('groups')">Groups</button>
+					<button class="chip badge-chip" onclick="switchTab('communities')">Communities</button>
 				</div>
 
-				<div class="chat-list">
-					<!-- Selected Active Chat -->
-					<% if (typeof contacts !== 'undefined' && contacts.length > 0) { %>
-						<% contacts.forEach((contact, index) => { %>
-						<div class="chat-item active <%= index === 0 ? 'active' : '' %>" data-user-id="<%= contact.id %>" data-username="<%= contact.username %>">
-							<div class="avatar-container">
-								<img src="https://i.pravatar.cc/150?img=32" alt="<%= contact.username %>">
-								<span class="status-badge online"></span>
+				<!-- SIDEBAR CHAT & DISCOVER LIST CONTAINER -->
+				<div class="chat-list" id="sidebar-list-container">
+					
+					<!-- TAB 1: ALL CONTACTS (Default View) -->
+					<div id="tab-content-all" class="tab-pane">
+						<% if (typeof contacts !== 'undefined' && contacts.length > 0) { %>
+							<% contacts.forEach((contact, index) => { %>
+							<div class="chat-item <%= index === 0 ? 'active' : '' %>" data-user-id="<%= contact.id %>" data-username="<%= contact.username %>">
+								<div class="avatar-container">
+									<img src="https://i.pravatar.cc/150?img=<%= contact.id + 10 %>" alt="<%= contact.username %>">
+									<span class="status-badge online"></span>
+								</div>
+								<div class="chat-details">
+									<span class="chat-name"><%= contact.username %></span>
+									<p class="chat-preview">Connected contact</p>
+								</div>
 							</div>
-							<div class="chat-details">
-								<span class="chat-name"><%= contact.username %></span>
-								<p class="chat-preview">You're now friends with <%= contact.username %>. · 1d</p>
+							<% }); %>
+						<% } else { %>
+							<div style="padding: 15px; text-align: center; color: #888; font-size: 0.85rem;">
+								<p>No contacts found. Click "Follow" to add users!</p>
 							</div>
-						</div>
-						<% }); %>
-					<% } else { %>
-						<div style="padding: 10px 15px; text-align: center; color: #888; font-size: 0.85rem;">
-							<p>No friends lists.</p>
-						</div>
-					<% } %>
+						<% } %>
+					</div>
+
+					<!-- TAB 2: FOLLOW REGISTERED USERS -->
+					<div id="tab-content-follow" class="tab-pane" style="display: none;">
+						<% if (typeof discoverUsers !== 'undefined' && discoverUsers.length > 0) { %>
+							<% discoverUsers.forEach((discUser) => { %>
+							<div class="chat-item" style="justify-content: space-between;" data-user-id="<%= discUser.id %>">
+								<div style="display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;">
+									<div class="avatar-container" style="width: 40px; height: 40px; flex-shrink: 0;">
+										<img src="https://i.pravatar.cc/150?img=<%= discUser.id + 20 %>" alt="<%= discUser.username %>" style="width: 100%; height: 100%; border-radius: 50%;">
+										<span class="status-badge online"></span>
+									</div>
+									<div class="chat-details" style="overflow: hidden;">
+										<span class="chat-name"><%= discUser.username %></span>
+										<p class="chat-preview"><%= discUser.email %></p>
+									</div>
+								</div>
+								<button class="btn-follow" onclick="followUser('<%= discUser.id %>')" style="padding: 6px 14px; background: #0084ff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;">
+									Follow
+								</button>
+							</div>
+							<% }); %>
+						<% } else { %>
+							<div style="padding: 15px; text-align: center; color: #888; font-size: 0.85rem;">
+								<p>No other registered users found in database.</p>
+							</div>
+						<% } %>
+					</div>
 				</div>
 			</aside>
 
@@ -178,8 +211,48 @@
 					console.error('Error following user:', err);
 				}
 			}
-		</script>
 
+			// Tab switching logic for filter chips
+			function switchTab(tabName) {
+				// Remove active class from all chips
+				document.querySelectorAll('.filter-chips .chip').forEach(btn => btn.classList.remove('active'));
+				// Hide all tab panes
+				document.querySelectorAll('.tab-pane').forEach(pane => pane.style.display = 'none');
+				// Activate selected tab chip and show corresponding pane
+				if (tabName === 'all') {
+					document.getElementById('tab-content-all').style.display = 'block';
+					event.currentTarget.classList.add('active');
+				} else if (tabName === 'follow') {
+					document.getElementById('tab-content-follow').style.display = 'block';
+					event.currentTarget.classList.add('active');
+				} else {
+					// Fallback for unread/groups/communities placeholder views
+					document.getElementById('tab-content-all').style.display = 'block';
+					event.currentTarget.classList.add('active');
+				}
+			}
+
+			// Follow Account Database Action
+			async function followUser(targetUserId) {
+				try {
+					const response = await fetch('/api/follow', {
+						method: 'POST',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({ followeeId: targetUserId })
+					});
+
+					const result = await response.json();
+					if (response.ok && result.success) {
+						// Refresh workspace to reflect new following status
+						window.location.reload();
+					} else {
+						alert(result.error || 'Failed to follow user.');
+					}
+				} catch (err) {
+					console.error('Error following user:', err);
+				}
+			}
+		</script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="/js/client.js"></script>
 	</body>
