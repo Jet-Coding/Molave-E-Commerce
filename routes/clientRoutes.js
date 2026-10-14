@@ -14,66 +14,13 @@ router.get("/", verifyToken, (req, res) => {
         const usersList = stmt.all(currentUserId);
 
         return res.render("client/index", {
-            title: "Sandbox Chat",
+            title: "SubText | ChatApp",
             user: req.user,
             usersList: usersList
         });
     } catch (error) {
         console.error("Error loading chat workspace:", error);
         return res.status(500).send("Internal Server Error");
-    }
-});
-
-router.get("/", verifyToken, (req, res) => {
-    const currentUserId = req.user.id;
-
-    // Fetch contacts already followed by the current user
-    const contactsStmt = db.prepare(`
-        SELECT u.id, u.username, u.email 
-        FROM users u 
-        INNER JOIN follows f ON u.id = f.followee_id 
-        WHERE f.follower_id = ?
-        ORDER BY u.username ASC
-    `);
-    const contacts = contactsStmt.all(currentUserId);
-
-    // Fetch ALL registered database users available to follow (excluding self and already followed)
-    const discoverStmt = db.prepare(`
-        SELECT id, username, email 
-        FROM users 
-        WHERE id != ? 
-        AND id NOT IN (SELECT followee_id FROM follows WHERE follower_id = ?)
-        ORDER BY username ASC
-    `);
-    const discoverUsers = discoverStmt.all(currentUserId, currentUserId);
-
-    res.render("client/index", {
-        title: "Sandbox | Chat Workspace",
-        user: req.user,
-        contacts: contacts,
-        discoverUsers: discoverUsers // Passes registered database users to view
-    });
-});
-
-router.post("/api/follow", verifyToken, (req, res) => {
-    const { followeeId } = req.body;
-    const followerId = req.user.id;
-
-    if (!followeeId) {
-        return res.status(400).json({ error: "Missing followee ID." });
-    }
-
-    try {
-        const insertStmt = db.prepare(`
-            INSERT OR IGNORE INTO follows (follower_id, followee_id) 
-            VALUES (?, ?)
-        `);
-        insertStmt.run(followerId, followeeId);
-        
-        return res.json({ success: true });
-    } catch (err) {
-        console.error("Database follow error:", err);
-        return res.status(500).json({ error: "Failed to follow user in database." });
     }
 });
 
@@ -98,22 +45,64 @@ const optionalAuth = (req, res, next) => {
     next();
 };
 
-// Follow user API endpoint
+// GET / - Workspace Route
+router.get('/', verifyToken, (req, res) => {
+    const currentUserId = req.user.id;
+
+    try {
+        // 1. Fetch users already followed by current user
+        const contactsStmt = db.prepare(`
+            SELECT u.id, u.username, u.email 
+            FROM users u 
+            INNER JOIN follows f ON u.id = f.followee_id 
+            WHERE f.follower_id = ?
+            ORDER BY u.username ASC
+        `);
+        const contacts = contactsStmt.all(currentUserId);
+
+        // 2. Fetch all other registered users available to follow
+        const discoverStmt = db.prepare(`
+            SELECT id, username, email 
+            FROM users 
+            WHERE id != ? 
+            AND id NOT IN (SELECT followee_id FROM follows WHERE follower_id = ?)
+            ORDER BY username ASC
+        `);
+        const discoverUsers = discoverStmt.all(currentUserId, currentUserId);
+
+        // Pass database results to EJS
+        res.render('client/index', {
+            title: 'SubText | ChatApp"',
+            user: req.user,
+            contacts: contacts,
+            discoverUsers: discoverUsers
+        });
+    } catch (err) {
+        console.error('Error fetching users from database:', err);
+        res.status(500).send('Server Error');
+    }
+});
+
+// POST /api/follow - Create a follow connection in SQLite
 router.post('/api/follow', verifyToken, (req, res) => {
     const { followeeId } = req.body;
     const followerId = req.user.id;
 
     if (!followeeId) {
-        return res.status(400).json({ error: 'Missing followeeId' });
+        return res.status(400).json({ success: false, error: 'Missing target user ID.' });
     }
 
     try {
-        const stmt = db.prepare('INSERT OR IGNORE INTO follows (follower_id, followee_id) VALUES (?, ?)');
-        stmt.run(followerId, followeeId);
-        return res.json({ success: true });
+        const insertStmt = db.prepare(`
+            INSERT OR IGNORE INTO follows (follower_id, followee_id) 
+            VALUES (?, ?)
+        `);
+        const result = insertStmt.run(followerId, followeeId);
+
+        return res.json({ success: true, message: 'Successfully followed user.' });
     } catch (err) {
-        console.error('Follow error:', err);
-        return res.status(500).json({ error: 'Failed to follow user' });
+        console.error('Error inserting follow record:', err);
+        return res.status(500).json({ success: false, error: 'Database transaction failed.' });
     }
 });
 

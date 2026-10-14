@@ -29,7 +29,7 @@
 					<button class="chip badge-chip" onclick="switchTab('communities')">Communities</button>
 				</div>
 
-				<!-- SIDEBAR CHAT & DISCOVER LIST CONTAINER -->
+				<!-- Sidebar List & Tab Panes -->
 				<div class="chat-list" id="sidebar-list-container">
 					
 					<!-- TAB 1: ALL CONTACTS (Default View) -->
@@ -43,18 +43,18 @@
 								</div>
 								<div class="chat-details">
 									<span class="chat-name"><%= contact.username %></span>
-									<p class="chat-preview">Connected contact</p>
+									<p class="chat-preview">You're now connected with <%= contact.username %>.</p>
 								</div>
 							</div>
 							<% }); %>
 						<% } else { %>
-							<div style="padding: 15px; text-align: center; color: #888; font-size: 0.85rem;">
-								<p>No contacts found. Click "Follow" to add users!</p>
+							<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+								<p>No contacts yet. Click the "Follow" tab to add users!</p>
 							</div>
 						<% } %>
 					</div>
 
-					<!-- TAB 2: FOLLOW REGISTERED USERS -->
+					<!-- TAB 2: FOLLOW REGISTERED USERS (Database Discovery) -->
 					<div id="tab-content-follow" class="tab-pane" style="display: none;">
 						<% if (typeof discoverUsers !== 'undefined' && discoverUsers.length > 0) { %>
 							<% discoverUsers.forEach((discUser) => { %>
@@ -69,14 +69,14 @@
 										<p class="chat-preview"><%= discUser.email %></p>
 									</div>
 								</div>
-								<button class="btn-follow" onclick="followUser('<%= discUser.id %>')" style="padding: 6px 14px; background: #0084ff; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 0.8rem; font-weight: 600; flex-shrink: 0;">
+								<button class="btn-follow" onclick="followUser('<%= discUser.id %>')">
 									Follow
 								</button>
 							</div>
 							<% }); %>
 						<% } else { %>
-							<div style="padding: 15px; text-align: center; color: #888; font-size: 0.85rem;">
-								<p>No other registered users found in database.</p>
+							<div style="padding: 20px; text-align: center; color: var(--text-muted); font-size: 0.85rem;">
+								<p>You are following all registered users!</p>
 							</div>
 						<% } %>
 					</div>
