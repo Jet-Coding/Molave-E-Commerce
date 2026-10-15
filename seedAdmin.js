@@ -5,31 +5,22 @@ async function seedAdmin() {
 	const adminUsername = "admin";
 	const adminEmail = "admin@sandbox.com";
 	const rawPassword = "AdminPassword123!"; // Change to your preferred password
-
 	try {
-		// 1. Check if the admin user already exists
+		// Check if the admin user already exists
 		const checkStmt = db.prepare(
 			"SELECT * FROM admin WHERE username = ? OR email = ?",
 		);
 		const existingAdmin = checkStmt.get(adminUsername, adminEmail);
-
 		if (existingAdmin) {
-			console.log("⚠️  Admin user already exists in sandbox.db!");
+			console.log("⚠️  Admin user already exists in syndol.db!");
 			process.exit(0);
 		}
-
-		// 2. Hash the admin password
+		// Hash the admin password
 		const salt = await bcrypt.genSalt(10);
 		const hashedPassword = await bcrypt.hash(rawPassword, salt);
-
-		// 3. Insert default admin record
-		const insertStmt = db.prepare(`
-            INSERT INTO admin (username, email, password, role)
-            VALUES (?, ?, ?, ?)
-        `);
-
+		// Insert default admin record
+		const insertStmt = db.prepare(`INSERT INTO admin (username, email, password, role) VALUES (?, ?, ?, ?)`);
 		insertStmt.run(adminUsername, adminEmail, hashedPassword, "admin");
-
 		console.log("==========================================");
 		console.log("✅ Default admin account created successfully!");
 		console.log(`Username: ${adminUsername}`);
@@ -43,5 +34,4 @@ async function seedAdmin() {
 		process.exit(0);
 	}
 }
-
 seedAdmin();

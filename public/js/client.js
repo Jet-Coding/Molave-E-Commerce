@@ -1,13 +1,14 @@
 document.addEventListener("DOMContentLoaded", () => {
-	// 1. Initialize Socket.io Connection
-	const socket = io();
 
-	// 2. Load authenticated user data injected from EJS
+	// Initialize Socket.io Connection
+	const socket = io();
+	
+	// Load authenticated user data injected from EJS
 	const senderName = window.currentUser || "Client";
 	const senderId = window.currentUserId || "guest_user";
 	const roomId = `room_${senderId}`;
 
-	// 3. Join dynamic Socket room
+	// Join dynamic Socket room
 	socket.emit("join_room", { roomId });
 
 	// DOM Elements
@@ -17,12 +18,11 @@ document.addEventListener("DOMContentLoaded", () => {
 	const toggleInfoBtn = document.getElementById("toggle-info");
 	const sidebarRight = document.getElementById("sidebar-right");
 
-	// 4. Handle Sending Messages
+	// Handle Sending Messages
 	if (chatForm) {
 		chatForm.addEventListener("submit", (e) => {
 			e.preventDefault();
 			const text = messageInput.value.trim();
-
 			if (!text) return;
 
 			// Emit message to server matching server.js event handler
@@ -32,12 +32,11 @@ document.addEventListener("DOMContentLoaded", () => {
 				text,
 				roomId
 			});
-
 			messageInput.value = "";
 		});
 	}
 
-	// 5. Handle Receiving Live Broadcasted Messages
+	// Handle Receiving Live Broadcasted Messages
 	socket.on("receive_message", (data) => {
 		const isOutgoing = String(data.senderId) === String(senderId);
 

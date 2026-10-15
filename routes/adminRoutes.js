@@ -15,11 +15,9 @@ router.get("/dashboard", adminAuth, (req, res) => {
 		const adminListStmt = db.prepare(
 			"SELECT id, username, email, role, created_at FROM admin ORDER BY id DESC"
 		);
-
 		const totalUsers = totalUsersStmt.get()?.count || 0;
 		const totalAdmins = totalAdminsStmt.get()?.count || 0;
 		const adminList = adminListStmt.all();
-
 		res.render("admin/dashboard", {
 			title: "Admin Dashboard",
 			activePage: "dashboard",
@@ -47,7 +45,6 @@ router.get("/users", adminAuth, (req, res) => {
 	try {
 		const stmt = db.prepare("SELECT id, username, email, role, created_at FROM users ORDER BY username ASC");
         const usersList = stmt.all();
-
         return res.render("admin/users", {
             title: "Users List",
             activePage: "users",
@@ -58,6 +55,7 @@ router.get("/users", adminAuth, (req, res) => {
 		console.error("Error fetching users:", error);
 		res.status(500).render("admin/users", {
 			title: "Users Lists",
+			activePage: "users",
 			usersList: [],
 			error: "Failed to load registered users."
 		});
@@ -69,7 +67,6 @@ router.get("/history", adminAuth, (req, res) => {
 	try {
 		const stmt = db.prepare("SELECT id, username, email, role, created_at FROM users ORDER BY username ASC");
         const usersList = stmt.all();
-
         return res.render("admin/history", {
             title: "History",
             activePage: "history",
@@ -78,6 +75,7 @@ router.get("/history", adminAuth, (req, res) => {
 		console.error("Error fetching users:", error);
 		res.status(500).render("admin/history", {
 			title: "History Lists",
+			activePage: "history",
 			usersList: [],
 			error: "Failed to load users history."
 		});
@@ -89,7 +87,6 @@ router.get("/analytics", adminAuth, (req, res) => {
 	try {
 		const stmt = db.prepare("SELECT id, username, email, role, created_at FROM users ORDER BY username ASC");
         const usersList = stmt.all();
-
         return res.render("admin/analytics", {
             title: "Analysis",
             activePage: "analytics",
@@ -109,7 +106,6 @@ router.get("/settings", adminAuth, (req, res) => {
 	try {
 		const stmt = db.prepare("SELECT id, username, email, role, created_at FROM users ORDER BY username ASC");
         const usersList = stmt.all();
-
         return res.render("admin/settings", {
             title: "Settings",
             activePage: "settings",
