@@ -1,5 +1,5 @@
-SandBox Real-Time Chat Application: Production & Technical Documentation.
-1. System Architecture Overview The SandBox Chat Application is built as an asynchronous,
+SynDol Real-Time Chat Application: Production & Technical Documentation.
+1. System Architecture Overview The SynDol Chat Application is built as an asynchronous,
 event-driven web platform utilizing Node.js, Express, Socket.io, and an embedded SQLite database using better-sqlite3.
 - Core Runtime: Node.js v24+ executing an Express app wrapped inside Node's native HTTP server instance.
 - Database Layer: Synchronous, persistent SQLite instance configured in Write-Ahead Logging (WAL) mode.

@@ -1,7 +1,7 @@
 const Database = require("better-sqlite3");
 const path = require("path");
 
-const db = new Database(path.join(__dirname, "../syndol.db"), {
+const db = new Database(path.join(__dirname, "../molave.db"), {
   timeout: 5000,
 })
 

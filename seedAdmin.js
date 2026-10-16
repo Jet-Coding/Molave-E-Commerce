@@ -3,8 +3,8 @@ const db = require("./config/db");
 
 async function seedAdmin() {
 	const adminUsername = "admin";
-	const adminEmail = "admin@sandbox.com";
-	const rawPassword = "AdminPassword123!"; // Change to your preferred password
+	const adminEmail = "admin@molave.com";
+	const rawPassword = "AdminPassword!19yn4ol"; // Change to your preferred password
 	try {
 		// Check if the admin user already exists
 		const checkStmt = db.prepare(
@@ -12,7 +12,7 @@ async function seedAdmin() {
 		);
 		const existingAdmin = checkStmt.get(adminUsername, adminEmail);
 		if (existingAdmin) {
-			console.log("⚠️  Admin user already exists in syndol.db!");
+			console.log("⚠️  Admin user already exists in molave.db!");
 			process.exit(0);
 		}
 		// Hash the admin password
